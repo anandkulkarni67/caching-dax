@@ -1,0 +1,236 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"Service": {
+				"enum": [
+					"APPLICATION"
+				],
+				"type": "string"
+			},
+			"ServiceStatusValue": {
+				"enum": [
+					"UP",
+					"DOWN",
+					"UNKNOWN"
+				],
+				"type": "string"
+			},
+			"Status": {
+				"properties": {
+					"service": {
+						"$ref": "#/components/schemas/Service"
+					},
+					"status": {
+						"$ref": "#/components/schemas/ServiceStatusValue"
+					},
+					"metadata": {}
+				},
+				"required": [
+					"service",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CustomerMetadata": {
+				"properties": {
+					"customerId": {
+						"type": "string"
+					},
+					"firstname": {
+						"type": "string"
+					},
+					"lastname": {
+						"type": "string"
+					},
+					"version": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"customerId",
+					"firstname",
+					"lastname",
+					"version"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "read-through-write-through-caching-dax-api",
+		"version": "1.0.0",
+		"contact": {}
+	},
+	"paths": {
+		"/v1/healthcheck/app": {
+			"get": {
+				"operationId": "GetAppHealth",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Status"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Healthcheck"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/v1/customers/{id}": {
+			"get": {
+				"operationId": "GetCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CustomerMetadata"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CustomerMetadata"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CustomerMetadata"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteCustomer",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Customers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "version",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/v1/customers": {
+			"post": {
+				"operationId": "CreateCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CustomerMetadata"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customers"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CustomerMetadata"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "read-through-write-through-caching-dax-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "gen-spec": "tsoa spec",
+    "gen-routes": "tsoa routes",
+    "build": "rimraf dist && npm run gen-spec && npm run gen-routes && tsc",
+    "serve": "node dist/main.js",
+    "version": "echo $npm_package_version",
+    "name": "echo $npm_package_name"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.161",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "@types/swagger-ui-express": "^4.1.8",
+    "rimraf": "^6.1.3",
+    "ts-node": "^10.9.2",
+    "tsoa": "^7.0.0-alpha.0",
+    "typescript": "^5.9.3"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "dependencies": {
+    "@amazon-dax-sdk/client-dax": "^3.0.4",
+    "@aws-sdk/client-dynamodb": "^3.1011.0",
+    "@aws-sdk/lib-dynamodb": "^3.1010.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "serverless-http": "^4.0.0",
+    "swagger-ui-express": "^5.0.1"
+  }
+}

@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: A template to create IAM resources for a static website.
+
+Parameters:
+  ApplicationName:
+    Type: String
+    Default: 'serverless-api'
+
+Resources:
+
+  APILambdaInvocatinRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ '-', [ !Ref ApplicationName, 'api']]
+      Description: 'An IAM role to allow lambda invocation'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: lambda-invocation-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: '*'
+        - PolicyName: dynamodb-access-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dax:GetItem
+                  - dax:PutItem
+                  - dax:DeleteItem
+                  - dax:UpdateItem
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ApplicationName}*'
+
+  CustomerTableCacheRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ '-', [ !Ref ApplicationName, 'api']]
+      Description: 'An IAM role to allow lambda invocation'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: dax.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: dax-access-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:UpdateItem
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ApplicationName}*'
+
+Outputs:
+  APILambdaInvocatinRoleArn:
+    Value: !GetAtt APILambdaInvocatinRole.Arn
+    Export:
+      Name: !Join [ '-', [ !Ref ApplicationName, 'lambda']]
+    Description: 'API Lambda Invocation role Amazone Resource Name'
+  CustomerTableCacheRoleArn:
+    Value: !GetAtt CustomerTableCacheRole.Arn
+    Export:
+      Name: !Join [ '-', [ !Ref ApplicationName, 'cache']]
+    Description: 'Customer Table Cache store role Amazone Resource Name'

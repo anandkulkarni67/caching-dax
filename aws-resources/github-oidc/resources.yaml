@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: A template to create IAM resources for a static website.
+
+Parameters:
+  ApplicationName:
+    Type: String
+    Default: 'optimistic-locking'
+  GithubUserName:
+    Type: String
+  GithubRepositoryName:
+    Type: String
+
+Resources:
+
+  GithubOIDCProvider:
+   Type: AWS::IAM::OIDCProvider
+   Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: 
+         - sts.amazonaws.com
+
+  GithubOIDCAuthentiactionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ '-', [ !Ref ApplicationName, 'github-oidc']]
+      Description: 'An IAM service role for the github oidc authentication'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GithubOIDCProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                  token.actions.githubusercontent.com:sub: !Sub 'repo:${GithubUserName}/${GithubRepositoryName}:environment:production'
+                  token.actions.githubusercontent.com:aud: sts.amazonaws.com
+      Policies:
+        - PolicyName: create-resources-permissions
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Resource: '*'
+                Action:
+                  - cloudformation:*
+                  - iam:*
+                  - lambda:*
+                  - apigateway:*
+                  - dynamodb:*
+
+Outputs:
+  GithubOIDCAuthenticationRoleArn:
+    Value: !GetAtt GithubOIDCAuthentiactionRole.Arn
+    Export:
+      Name: !Join [ '-', [ !Ref ApplicationName, 'github-oidc']]
+    Description: 'Github OIDC Authentication role Amazone Resource Name'

@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS SAM template for a a serverless API
+
+Parameters:
+  ApplicationName:
+    Type: String
+    Default: 'serverless-api'
+
+Resources:
+  
+  APIFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${ApplicationName}-api-lambda'
+      Handler: ./dist/index.handler
+      Role: 
+        Fn::ImportValue:
+          !Sub '${ApplicationName}-lambda'
+      Code:
+        ZipFile: | ## Placeholder code to create a resource.
+          exports.handler = async (event) => {
+            console.log("Hello, World!");
+            return {
+              statusCode: 200,
+              body: JSON.stringify('Hello from Lambda!'),
+            };
+          };
+      Runtime: nodejs24.x
+      Environment:
+        Variables:
+          CUSTOMER_TABLE_CACHE_ENDPOINT:
+            Fn::ImportValue:
+              !Sub '${ApplicationName}-customer-table-cache'
+          TTL_DAYS: 1
+          REGION: !Ref AWS::Region
+          ENVIRONMENT: 'aws'
+      Timeout: 30
+  
+  ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub '${ApplicationName}-api-gateway'
+
+  ApiGatewayRestApiResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: '{proxy+}'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayRestApiMethodANY:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: ANY
+      ResourceId: !Ref ApiGatewayRestApiResource
+      RestApiId: !Ref ApiGatewayRestApi
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${APIFunction.Arn}/invocations
+
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - ApiGatewayRestApiMethodANY
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      StageName: prod
+
+  LambdaApiGatewayPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref APIFunction
+      Principal: apigateway.amazonaws.com
+
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ApiGatewayRestApi}.execute-api.${AWS::Region}://"

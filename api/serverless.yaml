@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM template for a a serverless API
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/index.handler
+      Runtime: nodejs24.x
+      Policies: AmazonAPIGatewayInvokeFullAccess
+      Timeout: 30
+      Environment:
+        Variables:
+          CUSTOMER_TABLE_NAME: 'optimistic-locking-customer-table'
+          TTL_DAYS: 1
+          REGION: 'us-east-1'
+          ENVIRONMENT: 'sam-local'
+      Events:
+        HelloWorldApi:
+          Type: Api
+          Properties:
+            Path: '/{proxy+}'
+            Method: ANY
+            RestApiId: !Ref HelloWorldApiGateway
+
+  HelloWorldApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      # Optional: Add CORS configuration if needed
+      # Cors:
+      #   AllowOrigin: "'*'"
+      #   AllowMethods: "'GET,POST,PUT,DELETE'"

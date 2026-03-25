@@ -1,0 +1,19 @@
+{
+  "name": "read-through-write-through-caching-dax",
+  "version": "1.0.0",
+  "description": "Caching implementation using DAX",
+  "homepage": "https://github.com/anandkulkarni67/read-through-write-through-caching-dax#readme",
+  "bugs": {
+    "url": "https://github.com/anandkulkarni67/read-through-write-through-caching-dax/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anandkulkarni67/read-through-write-through-caching-dax.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "scripts": {
+    "name": "echo $npm_package_name",
+    "version": "echo $npm_package_version"
+  }
+}

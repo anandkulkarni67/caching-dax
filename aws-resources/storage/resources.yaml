@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS SAM template for storage resources for a serverless API
+
+Parameters:
+  ApplicationName:
+    Type: String
+    Default: 'serverless-api'
+
+Resources:
+
+  CustomerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions: 
+        - AttributeName: CustomerId
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: CustomerId
+          KeyType: HASH
+      TableName: !Sub '${ApplicationName}-customer-table'
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+  CustomerTableCache:
+    Type: AWS::DAX::Cluster
+    Properties:
+      ClusterName: !Sub '${ApplicatioName}-cache'
+      NodeType: dax.t3.small
+      ReplicationFactor: 2
+      IAMRoleARN: 
+        Fn::ImportValue:
+          !Sub '${ApplicationName}-cache'
+
+Outputs:
+  CustomerTable:
+    Description: "DynamoDB table arn"
+    Export:
+      Name: !Join [ '-', [ !Ref ApplicationName, 'customer-table']]
+    Value: !GetAtt CustomerTable.Arn
+
+  CustomerTableCache:
+    Description: "DynamoDB table accelerator endpoint"
+    Export:
+      Name: !Join [ '-', [ !Ref ApplicationName, 'customer-table-cache']]
+    Value: !GetAtt CustomerTableCache.ClusterDiscoveryEndpoint
