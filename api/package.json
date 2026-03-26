@@ -28,6 +28,9 @@
     "not ie 11"
   ],
   "dependencies": {
+    "@amazon-dax-sdk/lib-dax": "^3.0.4",
+    "@aws-sdk/client-dynamodb": "^3.1018.0",
+    "@aws-sdk/lib-dynamodb": "^3.1018.0",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "serverless-http": "^4.0.0",
