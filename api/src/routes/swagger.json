@@ -38,11 +38,49 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CustomerMetadata": {
+			"GetCustomerMetadata": {
 				"properties": {
+					"firstname": {
+						"type": "string"
+					},
+					"lastname": {
+						"type": "string"
+					},
 					"customerId": {
 						"type": "string"
 					},
+					"version": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"firstname",
+					"lastname",
+					"customerId",
+					"version"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateCustomerMetadata": {
+				"properties": {
+					"firstname": {
+						"type": "string"
+					},
+					"lastname": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"firstname",
+					"lastname"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateCustomerMetadata": {
+				"properties": {
 					"firstname": {
 						"type": "string"
 					},
@@ -55,7 +93,6 @@
 					}
 				},
 				"required": [
-					"customerId",
 					"firstname",
 					"lastname",
 					"version"
@@ -67,8 +104,8 @@
 		"securitySchemes": {}
 	},
 	"info": {
-		"title": "read-through-write-through-caching-dax-api",
-		"version": "1.0.0",
+		"title": "openapi-documentation-api",
+		"version": "1.0.18",
 		"contact": {}
 	},
 	"paths": {
@@ -103,7 +140,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/CustomerMetadata"
+									"$ref": "#/components/schemas/GetCustomerMetadata"
 								}
 							}
 						}
@@ -132,7 +169,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/CustomerMetadata"
+									"$ref": "#/components/schemas/GetCustomerMetadata"
 								}
 							}
 						}
@@ -157,7 +194,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CustomerMetadata"
+								"$ref": "#/components/schemas/UpdateCustomerMetadata"
 							}
 						}
 					}
@@ -204,7 +241,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/CustomerMetadata"
+									"$ref": "#/components/schemas/GetCustomerMetadata"
 								}
 							}
 						}
@@ -220,7 +257,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CustomerMetadata"
+								"$ref": "#/components/schemas/CreateCustomerMetadata"
 							}
 						}
 					}

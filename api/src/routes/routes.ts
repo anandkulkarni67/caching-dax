@@ -34,10 +34,29 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CustomerMetadata": {
+    "GetCustomerMetadata": {
         "dataType": "refObject",
         "properties": {
+            "firstname": {"dataType":"string","required":true},
+            "lastname": {"dataType":"string","required":true},
             "customerId": {"dataType":"string","required":true},
+            "version": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateCustomerMetadata": {
+        "dataType": "refObject",
+        "properties": {
+            "firstname": {"dataType":"string","required":true},
+            "lastname": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateCustomerMetadata": {
+        "dataType": "refObject",
+        "properties": {
             "firstname": {"dataType":"string","required":true},
             "lastname": {"dataType":"string","required":true},
             "version": {"dataType":"double","required":true},
@@ -122,7 +141,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCustomerController_createCustomer: Record<string, TsoaRoute.ParameterSchema> = {
-                CustomerMetadata: {"in":"body","name":"CustomerMetadata","required":true,"ref":"CustomerMetadata"},
+                CustomerMetadata: {"in":"body","name":"CustomerMetadata","required":true,"ref":"CreateCustomerMetadata"},
         };
         app.post('/v1/customers',
             ...(fetchMiddlewares<RequestHandler>(CustomerController)),
@@ -153,7 +172,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCustomerController_updateCustomer: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"string"},
-                CustomerMetadata: {"in":"body","name":"CustomerMetadata","required":true,"ref":"CustomerMetadata"},
+                CustomerMetadata: {"in":"body","name":"CustomerMetadata","required":true,"ref":"UpdateCustomerMetadata"},
         };
         app.put('/v1/customers/:id',
             ...(fetchMiddlewares<RequestHandler>(CustomerController)),

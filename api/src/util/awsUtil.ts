@@ -2,7 +2,6 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { getEnvironment } from '../util/environment';
 import { Environment } from "../model/data/Environment";
-import { Dax } from '@amazon-dax-sdk/client-dax';
 
 const createDynamoDBClient = () => {
     switch (getEnvironment()) {
@@ -25,9 +24,8 @@ const createDynamoDBClient = () => {
                 },
             });
         case Environment.AWS:
-            const daxClient = new Dax({
-                endpoint: process.env.CUSTOMER_TABLE_CACHE_ENDPOINT,
-                region: process.env.REGION,
+            return new DynamoDBClient({
+                region: process.env.REGION
             });
         default:
             throw new Error('Invalid environment value [ ' + process.env.ENVIRONMENT + ' ].');

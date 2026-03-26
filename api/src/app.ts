@@ -23,6 +23,7 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 });
 
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.log(error);
   switch (error.constructor) {
     case NotFound:
       res.status(404).json(error);

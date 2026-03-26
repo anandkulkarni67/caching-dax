@@ -1,15 +1,11 @@
 export class CustomerMetadata {
 
-    customerId: string;
     firstname: string;
     lastname: string;
-    version:number;
 
-    constructor(customerId: string, firstname: string, lastname: string, version: number) {
-        this.customerId = customerId;
+    constructor(firstname: string, lastname: string) {
         this.firstname = firstname;
         this.lastname = lastname;
-        this.version = version;
     }
 
 }

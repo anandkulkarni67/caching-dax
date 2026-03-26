@@ -1,14 +1,16 @@
-import { CustomerMetadata } from '../model/data/CustomerMetadata';
+import { UpdateCustomerMetadata } from '../model/data/UpdateCustomerMetadata';
 import { docClient } from '../util/awsUtil';
 import { daysinFuture } from '../util/dataTime';
 import { PutCommand, UpdateCommand, DeleteCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { randomUUID } from 'crypto';
 import { NotFound } from '../model/error/NotFound';
 import { ResourceConflict } from '../model/error/ResourceConflict';
+import { GetCustomerMetadata } from '../model/data/GetCustomerMetadata';
+import { CreateCustomerMetadata } from '../model/data/CreateCustomerMetadata';
 
 class CustomerService {
 
-    public async addCustomer(metadata: CustomerMetadata): Promise<CustomerMetadata> {
+    public async addCustomer(metadata: CreateCustomerMetadata): Promise<GetCustomerMetadata> {
         try {
             const customerId = randomUUID();
             const command = new PutCommand({
@@ -34,7 +36,7 @@ class CustomerService {
         }
     }
 
-    public async updateCustomer(customerId: String, metadata: CustomerMetadata): Promise<CustomerMetadata> {
+    public async updateCustomer(customerId: string, metadata: UpdateCustomerMetadata): Promise<GetCustomerMetadata> {
         try {
             const command = new UpdateCommand({
                 TableName: process.env.CUSTOMER_TABLE_NAME,
@@ -52,16 +54,23 @@ class CustomerService {
                     ":newversion": metadata.version + 1,
                     ":currentVersion": metadata.version
                 },
-                ReturnValues: "UPDATED_NEW"
+                ReturnValuesOnConditionCheckFailure: "ALL_OLD"
             });
             const data = await docClient.send(command);
             return {
                 ...metadata,
+                customerId,
                 version: metadata.version + 1
             }
         } catch (error: any) {
             if (error.message && error.message == 'The conditional request failed') {
-                throw new ResourceConflict('State conflict for the Customer record [ id: ' + customerId + ']')
+                if (error.Item) {
+                    if ( error.Item.Version.N != metadata.version) {
+                        throw new ResourceConflict('State conflict for the Customer record [ customerId: ' + customerId + ' ]')
+                    }
+                } else {
+                    throw new NotFound('Customer with [ customerId: ' + customerId + ' ] not found.');
+                }
             }
             throw error;
         }
@@ -78,18 +87,24 @@ class CustomerService {
                 ExpressionAttributeValues: {
                     ":currentVersion": version
                 },
-                ReturnValues: "ALL_OLD"
+                ReturnValuesOnConditionCheckFailure: "ALL_OLD"
             });
             await docClient.send(command);
         } catch (error: any) {
             if (error.message && error.message == 'The conditional request failed') {
-                throw new ResourceConflict('State conflict for the Customer record [ id: ' + customerId + ']')
+                if (error.Item) {
+                    if ( error.Item.Version.N != version) {
+                        throw new ResourceConflict('State conflict for the Customer record [ customerId: ' + customerId + ' ]')
+                    }
+                } else {
+                    throw new NotFound('Customer with [ customerId: ' + customerId + ' ] not found.');
+                }
             }
             throw error;
         }
     }
 
-    public async getCustomer(customerId: String): Promise<CustomerMetadata> {
+    public async getCustomer(customerId: String): Promise<GetCustomerMetadata> {
         try {
             const command = new GetCommand({
                 TableName: process.env.CUSTOMER_TABLE_NAME,
