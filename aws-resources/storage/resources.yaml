@@ -26,7 +26,7 @@ Resources:
   CustomerTableCache:
     Type: AWS::DAX::Cluster
     Properties:
-      ClusterName: !Sub '${ApplicatioName}-cache'
+      ClusterName: !Sub '${ApplicatiomName}-cache'
       NodeType: dax.t3.small
       ReplicationFactor: 2
       IAMRoleARN: 
