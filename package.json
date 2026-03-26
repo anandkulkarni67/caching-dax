@@ -1,6 +1,6 @@
 {
   "name": "caching-dax",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Read through and write through caching implementation using DAX",
   "homepage": "https://github.com/anandkulkarni67/read-through-write-through-caching-dax#readme",
   "bugs": {
