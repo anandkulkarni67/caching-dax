@@ -1,7 +1,7 @@
 import { UpdateCustomerMetadata } from '../model/data/UpdateCustomerMetadata';
-import { docClient } from '../util/awsUtil';
+import { dynamoDBClient } from '../util/awsUtil';
 import { daysinFuture } from '../util/dataTime';
-import { PutCommand, UpdateCommand, DeleteCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommandInput, UpdateCommandInput, DeleteCommandInput, GetCommandInput } from "@aws-sdk/lib-dynamodb";
 import { randomUUID } from 'crypto';
 import { NotFound } from '../model/error/NotFound';
 import { ResourceConflict } from '../model/error/ResourceConflict';
@@ -13,7 +13,7 @@ class CustomerService {
     public async addCustomer(metadata: CreateCustomerMetadata): Promise<GetCustomerMetadata> {
         try {
             const customerId = randomUUID();
-            const command = new PutCommand({
+            const command: PutCommandInput = {
                 TableName: process.env.CUSTOMER_TABLE_NAME,
                 Item: {
                     CustomerId: customerId,
@@ -24,8 +24,8 @@ class CustomerService {
                     Version: 1,
                     Ttl: daysinFuture(Number(process.env.TTL_DAYS))
                 }
-            });
-            const data = await docClient.send(command);
+            };
+            const data = await dynamoDBClient.put(command);
             return {
                 ...metadata,
                 customerId,
@@ -38,7 +38,7 @@ class CustomerService {
 
     public async updateCustomer(customerId: string, metadata: UpdateCustomerMetadata): Promise<GetCustomerMetadata> {
         try {
-            const command = new UpdateCommand({
+            const command: UpdateCommandInput = {
                 TableName: process.env.CUSTOMER_TABLE_NAME,
                 Key: {
                     CustomerId: customerId,
@@ -55,8 +55,8 @@ class CustomerService {
                     ":currentVersion": metadata.version
                 },
                 ReturnValuesOnConditionCheckFailure: "ALL_OLD"
-            });
-            const data = await docClient.send(command);
+            };
+            const data = await dynamoDBClient.update(command);
             return {
                 ...metadata,
                 customerId,
@@ -78,7 +78,7 @@ class CustomerService {
 
     public async deleteCustomer(customerId: String, version: number): Promise<void> {
         try {
-            const command = new DeleteCommand({
+            const command: DeleteCommandInput = {
                 TableName: process.env.CUSTOMER_TABLE_NAME,
                 Key: {
                     CustomerId: customerId
@@ -88,8 +88,8 @@ class CustomerService {
                     ":currentVersion": version
                 },
                 ReturnValuesOnConditionCheckFailure: "ALL_OLD"
-            });
-            await docClient.send(command);
+            };
+            await dynamoDBClient.delete(command);
         } catch (error: any) {
             if (error.message && error.message == 'The conditional request failed') {
                 if (error.Item) {
@@ -106,13 +106,13 @@ class CustomerService {
 
     public async getCustomer(customerId: String): Promise<GetCustomerMetadata> {
         try {
-            const command = new GetCommand({
+            const command: GetCommandInput = {
                 TableName: process.env.CUSTOMER_TABLE_NAME,
                 Key: {
                     CustomerId: customerId
                 }
-            });
-            const data = await docClient.send(command);
+            };
+            const data = await dynamoDBClient.get(command);
             if (data.Item) {
                 return {
                     ...data.Item.Metadata,

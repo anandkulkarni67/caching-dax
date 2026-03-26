@@ -15,5 +15,10 @@
   "scripts": {
     "name": "echo $npm_package_name",
     "version": "echo $npm_package_version"
+  },
+  "dependencies": {
+    "@amazon-dax-sdk/lib-dax": "^3.0.4",
+    "@aws-sdk/client-dynamodb": "^3.1018.0",
+    "@aws-sdk/lib-dynamodb": "^3.1017.0"
   }
 }

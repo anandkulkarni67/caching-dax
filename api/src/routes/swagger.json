@@ -104,8 +104,8 @@
 		"securitySchemes": {}
 	},
 	"info": {
-		"title": "openapi-documentation-api",
-		"version": "1.0.18",
+		"title": "caching-dax-api",
+		"version": "1.0.0",
 		"contact": {}
 	},
 	"paths": {
