@@ -1,4 +1,4 @@
-# Optimistic locking implementation using version attribute on DynamoDB Database table.
+# Caching techniques implementation using in-memory cache and dynamodb with generics and event emitters in Typescript.
 
 ## Change directory to API
 ```
@@ -15,37 +15,23 @@ npm install
 npm run build
 ```
 
-## Compiles typescript project
-```
-npm run build
-```
-
 ## Run the api locally
 ```
-sam local start-api --template-file serverless.yaml
+npm run serve
 
-sample http request: http://127.0.0.1:3000/v1/greet
-```
-
-## GitHub integration
-```
-1. Go to the source code github repository.
-2. Click on Settings.
-3. Click on Environments on the side panel and create a 'production' environment.
-4. Create three secret environment variables.
-   AWS_REGION ( AWS region in which resources are deployed )
-   AWS_ACCOUNT_ID ( ID of the AWS account where resources are deployed )
-   OIDC_ROLE_NAME ( you can find this value in the output of 'security' cloudformation stack )
-5. Create a standard environment variable.
-   APPLICATION_NAME ( must be same as the one used when creating an 'application' stack. )
+sample http request: http://localhost:3000/api-docs
 ```
 
-## AWS Resource creation
+## AWS Resource creation and deletion on local machine
 ```
-1. Go to github actions.
-2. Click on Deploy a project.
-3. Select following options:
-  - Branch: main
-  - Job: deploy-aws-resources
-  - release: any one the available ones in the dropdown. 
+From the root directory,
+
+Run following command to create aws resources.
+./setup-local-environment.sh
+
+Run following command to tead down aws resources.
+./tear-down-local-environment.sh
+
 ```
+
+
