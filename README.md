@@ -27,7 +27,7 @@ Run following command to tead down aws resources.
 Before starting the server, update CACHING_TECHNIQUE environment variable from the
 .env file under api project to select the Caching Technique to be used when the application is running.
 The selected caching technique should be displayed when follwoing http request is made:
-https://localhost:3000/v1/healthcheck/app
+http://localhost:3000/v1/healthcheck/app
 
 Possible values for the CACHING_TECHNIQUE environment variable are:
 CACHE_ASIDE
